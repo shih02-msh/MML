@@ -30,18 +30,20 @@ def split_files():
 
 def V_to_pdf_multiple():
 	c = 1
+	x = 0
+	y = 0
 
 	#get all files in this directory
 	for filename in os.listdir('output/test/'):
 
 		f = open('output/test/' + filename)
 		data = json.load(f)
-		input_file = "x10.pdf"
+		input_file = "x50.pdf"
 		file1 = PdfFileReader(open(input_file, "rb"))
 		output = PdfFileWriter()
 
 		#calculate # of pages needed and append template page #s
-		pages = math.ceil(len(data)/10)
+		pages = math.ceil(len(data)/50)
 		for page in range(0,pages):
 			output.addPage(file1.getPage(0))
 
@@ -55,25 +57,23 @@ def V_to_pdf_multiple():
 
 		# item count and value in the json file 
 		for index, i in enumerate(data):
-					
-			if index != 0 and index % 10 == 0 :
-				p += 1		
+
+			if index != 0 and index % 50 == 0 :
+				p += 1
 
 			first_page = file_handle[p]	
 			fp = io.BytesIO()
-			barcode.generate('code128', i, writer=ImageWriter(), output=fp)
+			writer = ImageWriter()
+			barcode.generate('code128',  i, writer=writer, output=fp)
 
-			#x-left, y-up, x-right, y-down
-			if index % 2 == 0:
-				x = [190,280]
-			else:
-				x = [490,580]
-			
-			y = int(145 * math.floor((index%10) / 2))
-			
-			image_rectangle = fitz.Rect(x[0],60+y,x[1],150+y)
+			if index != 0 and index % 5 == 0:
+				y =(72*math.floor((index - (50*p)) / 5))
+				x = 0 + index % 5
+
+			image_rectangle = fitz.Rect(-30+(115*x) ,45 + y , 230+(100*x), 105 + y)
 			first_page.insert_image(image_rectangle, stream=fp)
-		
+			x += 1
+
 		file_handle.saveIncr()
 
 		# incrementing file number for QR PDF
