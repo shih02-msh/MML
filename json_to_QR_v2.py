@@ -6,7 +6,6 @@ import os
 import math
 import barcode
 from barcode.writer import ImageWriter
-import io
 
 def split_files():
 	f = open('50000_barcodes_1_05_2022.json')
@@ -29,9 +28,7 @@ def split_files():
 			codes = []
 
 def V_to_pdf_multiple():
-	c = 1
-	x = 0
-	y = 0
+	c, x, y = 1 ,0, 0 
 
 	#get all files in this directory
 	for filename in os.listdir('output/test/'):
@@ -60,19 +57,26 @@ def V_to_pdf_multiple():
 
 			if index != 0 and index % 50 == 0 :
 				p += 1
-
+			
+			options = {
+    			'module_height': 12,
+			    'quiet_zone': 1,
+			    'text_distance': 1,
+			    'font_size': 15
+			    }	
+			png = i + '.png'
 			first_page = file_handle[p]	
-			fp = io.BytesIO()
-			writer = ImageWriter()
-			barcode.generate('code128',  i, writer=writer, output=fp)
+			code = barcode.get('code128', i,  writer = ImageWriter())
+			filename = code.save(i, options = options)
 
 			if index != 0 and index % 5 == 0:
 				y =(72*math.floor((index - (50*p)) / 5))
 				x = 0 + index % 5
 
-			image_rectangle = fitz.Rect(-30+(115*x) ,45 + y , 230+(100*x), 105 + y)
-			first_page.insert_image(image_rectangle, stream=fp)
+			image_rectangle = fitz.Rect(-10+(115*x) ,47.5 + y , 205+(100*x), 107.5 + y)
+			first_page.insert_image(image_rectangle, filename=png)
 			x += 1
+			os.remove(png)
 
 		file_handle.saveIncr()
 
