@@ -62,7 +62,7 @@ def V_to_pdf_multiple():
     			'module_height': 12,
 			    'quiet_zone': 1,
 			    'text_distance': 1,
-			    'font_size': 15
+			    'font_size': 12
 			    }	
 			png = i + '.png'
 			first_page = file_handle[p]	
@@ -73,7 +73,7 @@ def V_to_pdf_multiple():
 				y =(72*math.floor((index - (50*p)) / 5))
 				x = 0 + index % 5
 
-			image_rectangle = fitz.Rect(-10+(115*x) ,47.5 + y , 205+(100*x), 107.5 + y)
+			image_rectangle = fitz.Rect(-10+(115*x) ,47 + y , 205+(100*x), 107 + y)
 			first_page.insert_image(image_rectangle, filename=png)
 			x += 1
 			os.remove(png)
